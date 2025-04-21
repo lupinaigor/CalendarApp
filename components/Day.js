@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTheme } from './ThemeContext';
 
-export default function Day({ date, isCurrentMonth }) {
+export default function Day({ date, isCurrentMonth, isSelected, isInRange, onPress }) {
     const today = new Date();
     const isToday =
         date.getDate() === today.getDate() &&
@@ -12,23 +12,24 @@ export default function Day({ date, isCurrentMonth }) {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
 
-    const containerStyle = [
-        styles.dayContainer,
-        {
-            backgroundColor: isToday ? (isDark ? '#3399ff33' : '#cce5ff') : 'transparent',
-            borderRadius: isToday ? 50 : 8,
-        },
-    ];
+    const getBackgroundColor = () => {
+        if (isSelected) return isDark ? '#3399ff' : '#007bff';
+        if (isInRange) return isDark ? '#3399ff33' : '#cce5ff';
+        if (isToday) return isDark ? '#3399ff33' : '#cce5ff';
+        return 'transparent';
+    };
 
-    const textStyle = {
-        color: isCurrentMonth ? (isDark ? '#fff' : '#000') : '#999',
-        fontWeight: isToday ? 'bold' : 'normal',
+    const getTextColor = () => {
+        if (!isCurrentMonth) return '#999';
+        return isDark ? '#fff' : '#000';
     };
 
     return (
-        <View style={containerStyle}>
-            <Text style={textStyle}>{date.getDate()}</Text>
-        </View>
+        <TouchableOpacity onPress={onPress} style={[styles.dayContainer, { backgroundColor: getBackgroundColor(), borderRadius: isSelected || isToday ? 50 : 8 }]}>
+            <Text style={{ color: getTextColor(), fontWeight: isToday ? 'bold' : 'normal' }}>
+                {date.getDate()}
+            </Text>
+        </TouchableOpacity>
     );
 }
 
@@ -41,6 +42,7 @@ const styles = StyleSheet.create({
         margin: 4,
     },
 });
+
 
 
 
