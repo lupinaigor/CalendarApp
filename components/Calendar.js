@@ -1,36 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
 import Header from './Header';
 import Day from './Day';
 import { generateCalendarDays } from '../utils/calendarUtils';
+import { useTheme } from './ThemeContext';
 
 export default function Calendar() {
     const [currentDate, setCurrentDate] = useState(new Date());
-    const [calendarDays, setCalendarDays] = useState([]);
-
-    useEffect(() => {
-        const days = generateCalendarDays(currentDate);
-        setCalendarDays(days);
-    }, [currentDate]);
-
-    const weekDays = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'НД'];
+    const days = generateCalendarDays(currentDate);
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     return (
-        <View style={styles.calendarContainer}>
+        <View style={[styles.calendarContainer, { backgroundColor: isDark ? '#121212' : '#ffffff' }]}>
             <Header currentDate={currentDate} setCurrentDate={setCurrentDate} />
-
-            {/* Заголовки днів тижня */}
-            <View style={styles.weekHeader}>
-                {weekDays.map((day, index) => (
-                    <View key={index} style={styles.weekDay}>
-                        <Text style={styles.weekDayText}>{day}</Text>
-                    </View>
-                ))}
-            </View>
-
-            {/* Сітка днів */}
-            <View style={styles.grid}>
-                {calendarDays.map((dayObj, index) => (
+            <View style={styles.daysGrid}>
+                {days.map((dayObj, index) => (
                     <Day key={index} date={dayObj.date} isCurrentMonth={dayObj.isCurrentMonth} />
                 ))}
             </View>
@@ -40,28 +25,18 @@ export default function Calendar() {
 
 const styles = StyleSheet.create({
     calendarContainer: {
+        flex: 1,
         padding: 16,
     },
-    weekHeader: {
-        flexDirection: 'row',
-        borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
-        paddingBottom: 4,
-        marginBottom: 4,
-    },
-    weekDay: {
-        width: `${100 / 7}%`,
-        alignItems: 'center',
-    },
-    weekDayText: {
-        fontWeight: 'bold',
-        color: '#444',
-    },
-    grid: {
+    daysGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
+        justifyContent: 'center',
     },
 });
+
+
+
 
 
 

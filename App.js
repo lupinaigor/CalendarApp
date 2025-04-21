@@ -1,12 +1,29 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, StatusBar } from 'react-native';
 import Calendar from './components/Calendar';
+import { ThemeProvider, useTheme } from './components/ThemeContext';
+
+function AppContent() {
+    const { theme } = useTheme();
+
+    return (
+        <>
+            <StatusBar
+                barStyle={theme === 'dark' ? 'light-content' : 'dark-content'}
+                backgroundColor={theme === 'dark' ? '#121212' : '#ffffff'}
+            />
+            <View style={styles.container}>
+                <Calendar />
+            </View>
+        </>
+    );
+}
 
 export default function App() {
     return (
-        <View style={styles.container}>
-            <Calendar />
-        </View>
+        <ThemeProvider>
+            <AppContent />
+        </ThemeProvider>
     );
 }
 
@@ -17,6 +34,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
 });
+
 
 
 

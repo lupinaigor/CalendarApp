@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTheme } from './ThemeContext';
 
 export default function Day({ date, isCurrentMonth }) {
     const today = new Date();
@@ -8,43 +9,36 @@ export default function Day({ date, isCurrentMonth }) {
         date.getMonth() === today.getMonth() &&
         date.getFullYear() === today.getFullYear();
 
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
+
+    const containerStyle = [
+        styles.dayContainer,
+        {
+            backgroundColor: isToday ? (isDark ? '#3399ff33' : '#cce5ff') : 'transparent',
+            borderRadius: isToday ? 50 : 8,
+        },
+    ];
+
+    const textStyle = {
+        color: isCurrentMonth ? (isDark ? '#fff' : '#000') : '#999',
+        fontWeight: isToday ? 'bold' : 'normal',
+    };
+
     return (
-        <View style={[styles.dayContainer, !isCurrentMonth && styles.dimmed]}>
-            <View style={[styles.circle, isToday && styles.today]}>
-                <Text style={styles.dayText}>{date.getDate()}</Text>
-            </View>
+        <View style={containerStyle}>
+            <Text style={textStyle}>{date.getDate()}</Text>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     dayContainer: {
-        width: `${100 / 7}%`,
-        height: 50,
+        width: 40,
+        height: 40,
         justifyContent: 'center',
         alignItems: 'center',
-    },
-    dayText: {
-        color: '#000',
-    },
-    dimmed: {
-        opacity: 0.4,
-    },
-    circle: {
-        width: 32,
-        height: 32,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 16,
-    },
-    today: {
-        backgroundColor: '#3399ff',
-        // гарантовано зберігає форму круга
-        borderRadius: 16,
-        width: 32,
-        height: 32,
-        justifyContent: 'center',
-        alignItems: 'center',
+        margin: 4,
     },
 });
 
