@@ -39,6 +39,19 @@ const styles = StyleSheet.create({
     },
     today: {
         backgroundColor: '#3399ff',
+        // гарантовано зберігає форму круга
+        borderRadius: 16,
+        width: 32,
+        height: 32,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
+
+
+
+
+
+
+
 
