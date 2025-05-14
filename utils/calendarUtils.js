@@ -34,5 +34,3 @@ export function generateCalendarDays(date) {
 
     return days;
 }
-
-

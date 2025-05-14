@@ -1,74 +1,101 @@
-import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import Header from './Header';
-import Day from './Day';
 import { generateCalendarDays } from '../utils/calendarUtils';
 import { useTheme } from './ThemeContext';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { fetchDatesWithTasks } from '../database';
 
 export default function Calendar() {
     const [currentDate, setCurrentDate] = useState(new Date());
-    const [startDate, setStartDate] = useState(null);
-    const [endDate, setEndDate] = useState(null);
-    const days = generateCalendarDays(currentDate);
+    const [datesWithTasks, setDatesWithTasks] = useState([]);
+    const navigation = useNavigation();
     const { theme } = useTheme();
     const isDark = theme === 'dark';
 
-    const handleDayPress = (date) => {
-        if (!startDate || (startDate && endDate)) {
-            setStartDate(date);
-            setEndDate(null);
-        } else if (startDate && !endDate) {
-            if (date < startDate) {
-                setStartDate(date);
-            } else {
-                setEndDate(date);
-            }
-        }
+    const days = generateCalendarDays(currentDate);
+
+    useEffect(() => {
+        loadTaskDates();
+    }, [currentDate]);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            loadTaskDates(); // Оновити список дат з завданнями при поверненні на календар
+        }, [])
+    );
+
+    const loadTaskDates = async () => {
+        const result = await fetchDatesWithTasks();
+        setDatesWithTasks(result || []);
     };
 
-    const isDateInRange = (date) => {
-        if (startDate && endDate) {
-            return date > startDate && date < endDate;
-        }
-        return false;
+    const handleDayPress = (date) => {
+        navigation.navigate('TasksForDay', { date: date.toISOString().split('T')[0] });
+    };
+
+    const renderDay = ({ item }) => {
+        const day = item.date.getDate();
+        const isToday = new Date().toDateString() === item.date.toDateString();
+        const hasTask = datesWithTasks.includes(item.date.toISOString().split('T')[0]);
+
+        return (
+            <TouchableOpacity
+                style={[styles.dayContainer, isToday && styles.today]}
+                onPress={() => handleDayPress(item.date)}
+            >
+                <Text style={{ color: item.isCurrentMonth ? (theme === 'dark' ? '#fff' : '#000') : '#aaa' }}>
+                    {day}
+                </Text>
+                {hasTask && <View style={styles.dot} />}
+            </TouchableOpacity>
+        );
     };
 
     return (
         <View style={[styles.calendarContainer, { backgroundColor: isDark ? '#121212' : '#ffffff' }]}>
             <Header currentDate={currentDate} setCurrentDate={setCurrentDate} />
-            <View style={styles.daysGrid}>
-                {days.map((dayObj, index) => (
-                    <Day
-                        key={index}
-                        date={dayObj.date}
-                        isCurrentMonth={dayObj.isCurrentMonth}
-                        isSelected={startDate && dayObj.date.toDateString() === startDate.toDateString() ||
-                            endDate && dayObj.date.toDateString() === endDate.toDateString()}
-                        isInRange={isDateInRange(dayObj.date)}
-                        onPress={() => handleDayPress(dayObj.date)}
-                    />
-                ))}
-            </View>
+            <FlatList
+                data={days}
+                keyExtractor={(item, index) => index.toString()}
+                numColumns={7}
+                renderItem={renderDay}
+                contentContainerStyle={styles.calendarGrid}
+            />
         </View>
     );
 }
 
 const styles = StyleSheet.create({
+    calendarGrid: {
+        padding: 10,
+    },
+    dayContainer: {
+        width: 40,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: 5,
+        position: 'relative',
+    },
+    today: {
+        borderColor: '#007AFF',
+        borderWidth: 1,
+        borderRadius: 20,
+    },
+    dot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        backgroundColor: 'red',
+        position: 'absolute',
+        bottom: 4,
+    },
     calendarContainer: {
         flex: 1,
-        padding: 16,
-    },
-    daysGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
+        paddingTop: 10,
     },
 });
-
-
-
-
-
 
 
 
