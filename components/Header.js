@@ -1,44 +1,68 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTheme } from './ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 export default function Header({ currentDate, setCurrentDate }) {
     const { theme, toggleTheme } = useTheme();
+    const { t } = useTranslation();
 
-    const monthNames = [
-        'Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень',
-        'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'
-    ];
-
-    const currentMonthName = monthNames[currentDate.getMonth()];
+    const monthIndex = currentDate.getMonth();
+    const monthNames = t('months', { returnObjects: true, defaultValue: [] });
+    const currentMonthName = monthNames[monthIndex] || '';
     const currentYear = currentDate.getFullYear();
 
+    const weekdayNames = t('weekdays', { returnObjects: true, defaultValue: [] });
+
+    console.log('months:', monthNames);
+    console.log('weekdays:', weekdayNames);
+
     const goToPreviousMonth = () => {
-        setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() - 1)));
+        const newDate = new Date(currentDate);
+        newDate.setMonth(newDate.getMonth() - 1);
+        setCurrentDate(newDate);
     };
 
     const goToNextMonth = () => {
-        setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)));
+        const newDate = new Date(currentDate);
+        newDate.setMonth(newDate.getMonth() + 1);
+        setCurrentDate(newDate);
     };
 
     return (
-        <View style={styles.header}>
-            <Text style={[styles.monthText, { color: theme === 'dark' ? '#fff' : '#000' }]}>
-                {currentMonthName} {currentYear}
-            </Text>
+        <View>
+            <View style={styles.header}>
+                <Text style={[styles.monthText, { color: theme === 'dark' ? '#fff' : '#000' }]}>
+                    {currentMonthName} {currentYear}
+                </Text>
 
-            <View style={styles.controls}>
-                <TouchableOpacity onPress={toggleTheme} style={styles.themeButton}>
-                    <Text style={styles.themeText}>{theme === 'light' ? '🌙' : '☀️'}</Text>
-                </TouchableOpacity>
+                <View style={styles.controls}>
+                    <TouchableOpacity onPress={toggleTheme} style={styles.themeButton}>
+                        <Text style={styles.themeText}>{theme === 'light' ? '🌙' : '☀️'}</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity onPress={goToPreviousMonth} style={styles.arrowButton}>
-                    <Text style={styles.arrow}>▲</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity onPress={goToPreviousMonth} style={styles.arrowButton}>
+                        <Text style={styles.arrow}>▲</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity onPress={goToNextMonth} style={styles.arrowButton}>
-                    <Text style={styles.arrow}>▼</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity onPress={goToNextMonth} style={styles.arrowButton}>
+                        <Text style={styles.arrow}>▼</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+
+            <View style={styles.weekdaysContainer}>
+                {weekdayNames.map((day, index) => (
+                    <Text
+                        key={index}
+                        style={[
+                            styles.weekday,
+                            { color: theme === 'dark' ? '#fff' : '#000' }
+                        ]}
+                    >
+                        {day}
+                    </Text>
+                ))}
             </View>
         </View>
     );
@@ -49,7 +73,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 16,
+        marginBottom: 10,
     },
     monthText: {
         fontSize: 18,
@@ -75,8 +99,18 @@ const styles = StyleSheet.create({
     themeText: {
         fontSize: 18,
     },
+    weekdaysContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        paddingHorizontal: 10,
+        marginBottom: 8,
+    },
+    weekday: {
+        width: 40,
+        textAlign: 'center',
+        fontWeight: '600',
+    },
 });
-
 
 
 

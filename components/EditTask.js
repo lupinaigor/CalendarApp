@@ -24,14 +24,22 @@ const EditTask = () => {
             await insertTask(title, description, date);
         }
 
-        navigation.goBack();
+        // Переходимо одразу на Calendar, очищаючи стек
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'Calendar' }],
+        });
     };
 
     const handleDelete = async () => {
         if (task) {
             await deleteTask(task.id);
         }
-        navigation.goBack();
+
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'Calendar' }],
+        });
     };
 
     return (
@@ -62,8 +70,8 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         marginBottom: 12,
         padding: 10,
-        borderRadius: 6
-    }
+        borderRadius: 6,
+    },
 });
 
 export default EditTask;

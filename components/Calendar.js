@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     dayContainer: {
-        width: 40,
+        width: 45,
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
@@ -79,9 +79,12 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     today: {
-        borderColor: '#007AFF',
-        borderWidth: 1,
+        backgroundColor: '#007AFF', // повне зафарбування синім
         borderRadius: 20,
+        width: 45,
+        height: 45,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     dot: {
         width: 6,
@@ -96,6 +99,8 @@ const styles = StyleSheet.create({
         paddingTop: 10,
     },
 });
+
+
 
 
 
