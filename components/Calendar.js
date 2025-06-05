@@ -1,3 +1,4 @@
+//components/Calendar.js
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import Header from './Header';
@@ -5,6 +6,7 @@ import { generateCalendarDays } from '../utils/calendarUtils';
 import { useTheme } from './ThemeContext';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { fetchDatesWithTasks } from '../database';
+
 
 export default function Calendar() {
     const [currentDate, setCurrentDate] = useState(new Date());
